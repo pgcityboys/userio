@@ -2,7 +2,9 @@ package com.pgcityboys.userio.services;
 
 import com.pgcityboys.userio.dtos.AddKudosRequest;
 import com.pgcityboys.userio.dtos.CreateUserRequest;
+import com.pgcityboys.userio.entities.Kudos;
 import com.pgcityboys.userio.entities.User;
+import com.pgcityboys.userio.exceptions.UnableToGiveKudosException;
 import com.pgcityboys.userio.exceptions.UserDoesntExist;
 import com.pgcityboys.userio.exceptions.UsernameTakenException;
 import com.pgcityboys.userio.repositories.KudosRepository;
@@ -10,6 +12,9 @@ import com.pgcityboys.userio.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -39,8 +44,32 @@ public class UserService {
 		return user.get();
 	}
 
-	public void addKudos(AddKudosRequest addKudosRequest) {
+	public void addKudos(AddKudosRequest addKudosRequest) throws UnableToGiveKudosException {
+		Optional<Kudos> kudos = kudosRepository.findTopByOrderByTimeOfGrantingDesc();
+		if (kudos.isPresent()) {
+			Duration d = Duration.between(kudos.get().getTimeOfGranting(), LocalDateTime.now());
+			if (d.toHours() <= 24) {
+				throw new UnableToGiveKudosException(kudos.get().getTimeOfGranting().plusHours(24));
+			}
+		}
 
+		Kudos newKudos = new Kudos(addKudosRequest.receiver(), addKudosRequest.sender(), addKudosRequest.points());
+		kudosRepository.save(newKudos);
+	}
+
+	public int getUsersKudos(Long id) throws UserDoesntExist {
+		Optional<User> user = userRepository.findById(id);
+		if (user.isEmpty()) {
+			throw new UserDoesntExist(id);
+		}
+
+		List<Kudos> userKudos = kudosRepository.findKudosByReceiver(user.get());
+		int kudosPoints = 0;
+		for (Kudos k: userKudos) {
+			kudosPoints += k.getPoints();
+		}
+
+		return kudosPoints;
 	}
 
 }

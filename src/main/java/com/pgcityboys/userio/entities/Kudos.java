@@ -5,12 +5,14 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor
+@Getter
 public class Kudos {
 
 	@Id
@@ -21,13 +23,13 @@ public class Kudos {
 	@ManyToOne
 	private User sender;
 	private int points;
-	private LocalDate timeOfGranting;
+	private LocalDateTime timeOfGranting;
 
 	public Kudos(User receiver, User sender, int points) {
 		this.receiver = receiver;
 		this.sender = sender;
 		this.points = points;
-		timeOfGranting = LocalDate.now();
+		timeOfGranting = LocalDateTime.now();
 	}
 
 }

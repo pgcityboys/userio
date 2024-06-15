@@ -3,6 +3,7 @@ package com.pgcityboys.userio.controllers;
 import com.pgcityboys.userio.dtos.AddKudosRequest;
 import com.pgcityboys.userio.dtos.CreateUserRequest;
 import com.pgcityboys.userio.entities.User;
+import com.pgcityboys.userio.exceptions.UnableToGiveKudosException;
 import com.pgcityboys.userio.exceptions.UserDoesntExist;
 import com.pgcityboys.userio.exceptions.UsernameTakenException;
 import com.pgcityboys.userio.services.UserService;
@@ -48,7 +49,25 @@ public class UserController {
 	}
 
 	@PostMapping("/kudos")
-	public void addPoints(@RequestBody AddKudosRequest addKudosRequest) {
+	public ResponseEntity<?> addPoints(@RequestBody AddKudosRequest addKudosRequest) {
+		try {
+			userService.addKudos(addKudosRequest);
+			String message = String.format("%s sent to %s %d points", addKudosRequest.sender().toString(),
+					addKudosRequest.receiver().toString(), addKudosRequest.points());
+			return new ResponseEntity<>(message, HttpStatus.OK);
+		} catch (UnableToGiveKudosException e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	@GetMapping("/kudos/{id}")
+	public ResponseEntity<?> getUsersKudos(@PathVariable Long id) {
+		try {
+			int kudosPoints = userService.getUsersKudos(id);
+			return new ResponseEntity<>(kudosPoints, HttpStatus.OK);
+		} catch (UserDoesntExist e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.OK);
+		}
 
 	}
 
