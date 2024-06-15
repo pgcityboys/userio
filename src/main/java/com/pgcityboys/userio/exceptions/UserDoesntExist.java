@@ -5,6 +5,11 @@ public class UserDoesntExist extends Exception {
 	public UserDoesntExist(Long id) {
 		super("User with id " + id + " doesnt exist");
 	}
+
+	public UserDoesntExist(String login) {
+		super("User with login " + login + " doesnt exist");
+	}
+
 	public UserDoesntExist(Long id1, Long id2) {
 		super("User with id " + id1 + " or " + id2 + " doesnt exist");
 	}
