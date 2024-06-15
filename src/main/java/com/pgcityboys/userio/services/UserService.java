@@ -35,10 +35,10 @@ public class UserService {
 		return userRepository.save(newUser);
 	}
 
-	public User getUser(Long id) throws UserDoesntExist {
-		Optional<User> user = userRepository.findById(id);
+	public User getUser(String login) throws UserDoesntExist {
+		Optional<User> user = userRepository.findUserByLogin(login);
 		if (user.isEmpty()) {
-			throw new UserDoesntExist(id);
+			throw new UserDoesntExist(login);
 		}
 
 		return user.get();

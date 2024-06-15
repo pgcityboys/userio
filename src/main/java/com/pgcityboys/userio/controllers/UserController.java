@@ -37,10 +37,10 @@ public class UserController {
 		}
 	}
 
-	@GetMapping("/{id}")
-	public ResponseEntity<?> getUser(@PathVariable Long id) {
+	@GetMapping("/{login}")
+	public ResponseEntity<?> getUser(@PathVariable String login) {
 		try {
-			User foundUser = userService.getUser(id);
+			User foundUser = userService.getUser(login);
 			return new ResponseEntity<>(foundUser, HttpStatus.OK);
 		}
 		catch (UserDoesntExist e) {
