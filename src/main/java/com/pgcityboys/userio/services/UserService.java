@@ -44,7 +44,7 @@ public class UserService {
 		return user.get();
 	}
 
-	public void addKudos(AddKudosRequest addKudosRequest) throws UnableToGiveKudosException {
+	public void addKudos(AddKudosRequest addKudosRequest) throws UnableToGiveKudosException, UserDoesntExist {
 		Optional<Kudos> kudos = kudosRepository.findTopByOrderByTimeOfGrantingDesc();
 		if (kudos.isPresent()) {
 			Duration d = Duration.between(kudos.get().getTimeOfGranting(), LocalDateTime.now());
@@ -53,7 +53,13 @@ public class UserService {
 			}
 		}
 
-		Kudos newKudos = new Kudos(addKudosRequest.receiver(), addKudosRequest.sender(), addKudosRequest.points());
+		Optional<User> receiver = userRepository.findById(addKudosRequest.receiver());
+		Optional<User> sender = userRepository.findById(addKudosRequest.sender());
+		if (receiver.isEmpty() || sender.isEmpty()) {
+			throw new UserDoesntExist(addKudosRequest.receiver(), addKudosRequest.sender());
+		}
+
+		Kudos newKudos = new Kudos(receiver.get(), sender.get(), addKudosRequest.points());
 		kudosRepository.save(newKudos);
 	}
 

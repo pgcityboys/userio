@@ -55,7 +55,7 @@ public class UserController {
 			String message = String.format("%s sent to %s %d points", addKudosRequest.sender().toString(),
 					addKudosRequest.receiver().toString(), addKudosRequest.points());
 			return new ResponseEntity<>(message, HttpStatus.OK);
-		} catch (UnableToGiveKudosException e) {
+		} catch (UnableToGiveKudosException | UserDoesntExist e) {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 		}
 	}
@@ -68,7 +68,6 @@ public class UserController {
 		} catch (UserDoesntExist e) {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.OK);
 		}
-
 	}
 
 }
