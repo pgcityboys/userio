@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import static com.pgcityboys.userio.UserioApplication.BASE_URL;
 
-@CrossOrigin(originPatterns = "*" )
+@CrossOrigin(origins = "*" )
 @RestController
 @RequestMapping(BASE_URL + "/users")
 @RequiredArgsConstructor
