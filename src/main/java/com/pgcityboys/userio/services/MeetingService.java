@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -32,6 +33,9 @@ public class MeetingService {
     }
 
     public List<Meeting> getMeetingsByCategory(String category){
+        if(category.equals("any")){
+            return meetingRepository.findAll();
+        }
         return meetingRepository.findAllByCategory(category);
     }
 
