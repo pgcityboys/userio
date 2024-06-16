@@ -1,13 +1,16 @@
-FROM maven:3.9.7-eclipse-temurin-17 AS build
+FROM maven:3.9.6-eclipse-temurin-21 AS builder
 
-COPY src /home/app/src
-COPY pom.xml /home/app
-RUN mvn -f /home/app/pom.xml clean package
+WORKDIR /app
 
+COPY pom.xml .
+COPY src src
 
-FROM openjdk:17-jdk-alpine
-    
-COPY --from=build /home/app/target/userio-0.0.1-SNAPSHOT.jar /usr/local/lib/userio.jar
+RUN mvn clean package
+
+FROM eclipse-temurin:21
+
+WORKDIR /app
+COPY --from=builder /app/target/userio-0.0.1-SNAPSHOT.jar /app/userio.jar
 EXPOSE 8080
 
-ENTRYPOINT ["java","-jar","/usr/local/lib/userio.jar"]
+CMD ["java", "-jar", "userio.jar"]
